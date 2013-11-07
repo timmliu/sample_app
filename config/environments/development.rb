@@ -27,3 +27,11 @@ SampleApp::Application.configure do
   # number of complex assets.
   config.assets.debug = true
 end
+
+silence_warnings do
+  begin
+    require 'pry'
+    IRB = Pry
+  rescue LoadError
+  end
+end
