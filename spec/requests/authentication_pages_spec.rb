@@ -41,6 +41,29 @@ describe "Authentication" do
 
   describe "authorization" do
 
+    describe "for signed-in users" do
+      let(:user) { FactoryGirl.create(:user) }
+      before { sign_in user, no_capybara: true }
+
+      describe "trying to access new action" do
+        before { get new_user_path }
+        specify { expect(response).to redirect_to(root_path) }
+      end
+
+      describe "trying to access create action" do
+        before do
+          @user_new = { name: "Example User",
+                        email: "user@example.com",
+                        password: "foobar",
+                        password_confirmation: "foobar"
+                      }
+          post users_path, user: @user_new
+        end
+
+        specify { response.should redirect_to(root_path) }
+      end
+    end
+
     describe "for non-signed-in users" do
       let(:user) { FactoryGirl.create(:user) }
 
@@ -56,6 +79,20 @@ describe "Authentication" do
 
           it "should render the desired protected page" do
             expect(page).to have_title('Edit user')
+          end
+
+          describe "when signing in again" do
+            before do
+              delete signout_path
+              visit signin_path
+              fill_in "Email", with: user.email
+              fill_in "Password", with: user.password
+              click_button "Sign in"
+            end
+
+            it "should render the default (profile) page" do
+              expect(page).to have_title(user.name)
+            end
           end
         end
       end
@@ -105,6 +142,16 @@ describe "Authentication" do
       describe "submitting a DELETE request to the Users#destroy action" do
         before { delete user_path(user) }
         specify { expect(response).to redirect_to(root_url) }
+      end
+    end
+
+    describe "as admin user" do
+      let(:admin) { FactoryGirl.create(:admin) }
+      before { sign_in admin, no_capybara: true }
+
+      describe "should not be able to destroy/delete himself" do
+        before { delete user_path(admin) }
+        specify { response.should redirect_to(users_path) }
       end
     end
   end
