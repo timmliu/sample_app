@@ -74,4 +74,14 @@ describe "Micropost pages" do
     end
     it { should have_selector("div.pagination") }
   end
+
+  describe "delete links should not appear for microposts not created by current user" do
+    let(:usertest) { FactoryGirl.create(:user) }
+
+    before do
+      5.times { FactoryGirl.create(:micropost, user: usertest) }
+      visit "#{users_path}/#{usertest.id}"
+    end
+    it { should_not have_link('delete') }
+  end
 end
