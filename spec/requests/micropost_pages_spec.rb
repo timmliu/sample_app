@@ -42,4 +42,36 @@ describe "Micropost pages" do
       end
     end
   end
+
+  describe "displaying correct number of microposts in sidebar" do
+
+    describe "for 0 microposts" do
+      before { visit root_path }
+      it { should have_content("0 microposts") }
+    end
+
+    describe "for 1 micropost" do
+      before do
+        FactoryGirl.create(:micropost, user: user)
+        visit root_path
+      end
+      it { should have_content("1 micropost") }
+    end
+
+    describe "for 2+ microposts" do
+      before do
+        10.times { FactoryGirl.create(:micropost, user: user) }
+        visit root_path
+      end
+      it { should have_content("10 microposts") }
+    end
+  end
+
+  describe "paginating the feed correctly" do
+    before do
+      50.times { FactoryGirl.create(:micropost, user: user) }
+      visit root_path
+    end
+    it { should have_selector("div.pagination") }
+  end
 end
