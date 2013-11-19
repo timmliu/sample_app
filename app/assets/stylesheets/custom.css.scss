@@ -137,6 +137,8 @@ input {
   @extend .error;
 }
 
+span#charCount { display: inline; }
+
 /* footer */
 
 footer {

@@ -1,7 +1,23 @@
 <%= form_for(@micropost) do |f| %>
   <%= render 'shared/error_messages', object: f.object %>
   <div class="field">
-    <%= f.text_area :content, placeholder: "Compose new micropost..." %>
+  	<small id="charcount-wrap"> <strong><span id="charCount">140</span></strong> more characters available.</small>
+    <%= f.text_area :content, placeholder: "Compose new micropost...", onKeyPress: "return charLimit(this)", onKeyUp: "return characterCount(this)", maxlength: "140" %>
   </div>
   <%= f.submit "Post", class: "btn btn-large btn-primary" %>
 <% end %>
+
+<script type="text/javascript">
+//Textarea Character Count
+var maxLength=140;
+function charLimit(el) {
+    if (el.value.length > maxLength) return false;
+    return true;
+}
+function characterCount(el) {
+    var charCount = document.getElementById('charCount');
+    if (el.value.length > maxLength) el.value = el.value.substring(0,maxLength);
+    if (charCount) charCount.innerHTML = maxLength - el.value.length;
+    return true;
+}
+</script>
